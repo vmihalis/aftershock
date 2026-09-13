@@ -1,0 +1,31 @@
+{
+  "name": "aftershock",
+  "version": "0.0.1",
+  "private": false,
+  "type": "module",
+  "description": "Executable, revision-bound security intelligence for coding agents.",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "demo": "tsx src/demo.ts",
+    "dev": "tsx watch src/server.ts",
+    "lint": "tsc -p tsconfig.json --noEmit",
+    "start": "node dist/server.js",
+    "test": "node --import tsx --test --test-isolation=none tests/**/*.test.ts",
+    "verify:apm": "node experiments/apm-wasmer/run-feasibility.mjs",
+    "verify:receipt": "node experiments/apm-wasmer/verify-receipt.mjs"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@wasmer/sdk": "^0.13.0",
+    "semver": "^7.8.5"
+  },
+  "devDependencies": {
+    "@types/node": "^26.5.1",
+    "@types/semver": "^7.8.0",
+    "tsx": "^4.23.13",
+    "typescript": "^5.9.3"
+  }
+}

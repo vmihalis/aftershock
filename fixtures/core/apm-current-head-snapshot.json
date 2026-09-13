@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "repository": {
+    "fullName": "aftershock-demo/apm-agent-fixture",
+    "branch": "main",
+    "headSha": "587c569b7d313bbba9d75b31bf84a280c18262af"
+  },
+  "observedAt": "2026-09-13T18:02:00.000Z",
+  "inventory": {
+    "status": "COMPLETE",
+    "checkedPaths": [
+      "requirements.txt"
+    ],
+    "detail": "Same fixed dependency on a later team-owned fixture head."
+  },
+  "dependencies": [
+    {
+      "id": "requirements.txt:apm-cli:0.8.12",
+      "ecosystem": "PyPI",
+      "packageName": "apm-cli",
+      "version": "0.8.12",
+      "manifestPath": "requirements.txt",
+      "observedAt": "2026-09-13T18:02:00.000Z"
+    }
+  ]
+}

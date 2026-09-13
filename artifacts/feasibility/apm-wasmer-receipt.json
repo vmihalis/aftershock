@@ -1,0 +1,446 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-09-13T23:25:19.625Z",
+  "advisory": {
+    "id": "GHSA-xhrw-5qxx-jpwr",
+    "cve": "CVE-2026-44641",
+    "url": "https://github.com/microsoft/apm/security/advisories/GHSA-xhrw-5qxx-jpwr"
+  },
+  "repository": {
+    "sha": null,
+    "headSha": null,
+    "state": "uncommitted initial working tree",
+    "dirty": true
+  },
+  "capsule": {
+    "path": "experiments/apm-wasmer/run-feasibility.mjs",
+    "sha256": "8cc62e87d325ef3cb0718b12949edd7d887273f3f4b5c185af9c748f8bc00045"
+  },
+  "runtime": {
+    "sdk": "@wasmer/sdk@0.13.0",
+    "packageRequested": "python/python@=3.13.18",
+    "packageAcquisition": "cached_webc_bytes",
+    "packageArtifact": {
+      "path": "experiments/apm-wasmer/.cache/wasmer/cache-v1/packages/0464f16f1ad0ce4d1ab4266b057b62accd5b4123995a08103897699aefc92a54.bin",
+      "byteLength": 157272498,
+      "sha256": "0464f16f1ad0ce4d1ab4266b057b62accd5b4123995a08103897699aefc92a54"
+    },
+    "cache": "experiment-local cache; direct WEBC byte load when present",
+    "networkCapability": "disabled in every guest sandbox",
+    "hostFilesystemMounts": []
+  },
+  "syntheticCanary": {
+    "label": "AFTERSHOCK_SYNTHETIC_CANARY_V1",
+    "byteLength": 31,
+    "sha256": "31ee0784a78b5d030c8b6279d24196694b9b045734a2f14325ae97377505f549",
+    "containsCredentialOrPersonalData": false
+  },
+  "cases": [
+    {
+      "id": "vulnerable-target",
+      "role": "target_before",
+      "package": {
+        "name": "apm-cli",
+        "version": "0.8.11",
+        "source": "https://pypi.org/project/apm-cli/0.8.11/",
+        "wheel": "apm_cli-0.8.11-py3-none-any.whl",
+        "wheelByteLength": 462313,
+        "wheelSha256": "268a3832035d15568d9a395f40ac36fc1e66e98f116e2ba961662420a142b723"
+      },
+      "expectedEffect": "present_exact",
+      "networkCapability": "disabled",
+      "hostFilesystemMounts": [],
+      "runtimeVersion": {
+        "exitCode": 0,
+        "reason": "exited",
+        "ok": true,
+        "stdout": "Python 3.13.15\n",
+        "stderr": "",
+        "stdoutSha256": "322f765b04793d55160c8788550761630087e4847a77ed7a1090d79791f73c3b",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdoutTruncated": false,
+        "stderrTruncated": false
+      },
+      "compatibilityAttempts": {
+        "fullOfflineDependencyInstall": {
+          "exitCode": 1,
+          "reason": "exited",
+          "ok": false,
+          "stdout": "Looking in links: /workspace/wheels\nProcessing ./wheels/apm_cli-0.8.11-py3-none-any.whl\nINFO: pip is looking at multiple versions of apm-cli to determine which version is compatible with other requirements. This could take a while.\n",
+          "stderr": "\u001b[31mERROR: Could not find a version that satisfies the requirement click>=8.0.0 (from apm-cli) (from versions: none)\u001b[0m\u001b[31m\n\u001b[0m\u001b[31mERROR: No matching distribution found for click>=8.0.0\u001b[0m\u001b[31m\n\u001b[0m",
+          "stdoutSha256": "0521aad890b5f1dfffcd36f99fd84de7ae2e75f54138a699bdacf3f3899f60fa",
+          "stderrSha256": "03a0c70a61aee1433d00d71eccdd4c3ca5ba4978709f6492042ac5b0ea950cd8",
+          "stdoutTruncated": false,
+          "stderrTruncated": false
+        },
+        "wheelOnlyInstall": {
+          "exitCode": 0,
+          "reason": "exited",
+          "ok": true,
+          "stdout": "Processing ./wheels/apm_cli-0.8.11-py3-none-any.whl\nInstalling collected packages: apm-cli\nSuccessfully installed apm-cli-0.8.11\n",
+          "stderr": "\u001b[33mWARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.\u001b[0m\u001b[33m\n\u001b[0m",
+          "stdoutSha256": "6856558d272bc9da991e93954050aa5b40cd764f33d84858e4eb93c04a99fc7e",
+          "stderrSha256": "9fe799b9216df4b602a51be4b4c6de4164af51dffd3a512e4a953b73008ed851",
+          "stdoutTruncated": false,
+          "stderrTruncated": false
+        },
+        "fullCliImportAfterWheelOnlyInstall": {
+          "exitCode": 1,
+          "reason": "exited",
+          "ok": false,
+          "stdout": "",
+          "stderr": "Traceback (most recent call last):\n  File \u001b[35m\"<frozen runpy>\"\u001b[0m, line \u001b[35m203\u001b[0m, in \u001b[35m_run_module_as_main\u001b[0m\n  File \u001b[35m\"<frozen runpy>\"\u001b[0m, line \u001b[35m88\u001b[0m, in \u001b[35m_run_code\u001b[0m\n  File \u001b[35m\"/workspace/site/apm_cli/cli.py\"\u001b[0m, line \u001b[35m10\u001b[0m, in \u001b[35m<module>\u001b[0m\n    import click\n\u001b[1;35mModuleNotFoundError\u001b[0m: \u001b[35mNo module named 'click'\u001b[0m\n",
+          "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderrSha256": "843520edd095d5b35782397e70c91cb0f33976b7943b241bbdb40ef354bf4b81",
+          "stdoutTruncated": false,
+          "stderrTruncated": false
+        }
+      },
+      "narrowExecution": {
+        "classification": "public wheel, exact normalize_plugin_directory path, YAML serialization shim only",
+        "command": "python /workspace/runner.py",
+        "result": {
+          "exitCode": 0,
+          "reason": "exited",
+          "ok": true,
+          "stdout": "{\"called\": \"apm_cli.deps.plugin_parser.normalize_plugin_directory\", \"effect_path\": \"/workspace/project/untrusted-plugin/.apm/prompts/synthetic-canary.prompt.md\", \"generated\": \"/workspace/project/untrusted-plugin/apm.yml\"}\n",
+          "stderr": "",
+          "stdoutSha256": "786a4221589ff6fc99a4ed21b66ecffd0ad8e7859acaaa84c1bf52e997254b63",
+          "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdoutTruncated": false,
+          "stderrTruncated": false
+        }
+      },
+      "hostObservation": {
+        "source": {
+          "path": "/workspace/control/synthetic-canary.md",
+          "present": true,
+          "byteLength": 31,
+          "sha256": "31ee0784a78b5d030c8b6279d24196694b9b045734a2f14325ae97377505f549",
+          "exactSyntheticCanaryMatch": true
+        },
+        "effect": {
+          "path": "/workspace/project/untrusted-plugin/.apm/prompts/synthetic-canary.prompt.md",
+          "present": true,
+          "byteLength": 31,
+          "sha256": "31ee0784a78b5d030c8b6279d24196694b9b045734a2f14325ae97377505f549",
+          "exactSyntheticCanaryMatch": true,
+          "readError": null
+        },
+        "assessment": "effect_observed"
+      }
+    },
+    {
+      "id": "fixed-control",
+      "role": "fixed_control",
+      "package": {
+        "name": "apm-cli",
+        "version": "0.8.12",
+        "source": "https://pypi.org/project/apm-cli/0.8.12/",
+        "wheel": "apm_cli-0.8.12-py3-none-any.whl",
+        "wheelByteLength": 513557,
+        "wheelSha256": "d252a1364b52cf14dde7ca3a25dbd3af949e0d573d3f163fa3ac76757aec5961"
+      },
+      "expectedEffect": "absent",
+      "networkCapability": "disabled",
+      "hostFilesystemMounts": [],
+      "runtimeVersion": {
+        "exitCode": 0,
+        "reason": "exited",
+        "ok": true,
+        "stdout": "Python 3.13.15\n",
+        "stderr": "",
+        "stdoutSha256": "322f765b04793d55160c8788550761630087e4847a77ed7a1090d79791f73c3b",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdoutTruncated": false,
+        "stderrTruncated": false
+      },
+      "compatibilityAttempts": {
+        "fullOfflineDependencyInstall": {
+          "exitCode": 1,
+          "reason": "exited",
+          "ok": false,
+          "stdout": "Looking in links: /workspace/wheels\nProcessing ./wheels/apm_cli-0.8.12-py3-none-any.whl\nINFO: pip is looking at multiple versions of apm-cli to determine which version is compatible with other requirements. This could take a while.\n",
+          "stderr": "\u001b[31mERROR: Could not find a version that satisfies the requirement click>=8.0.0 (from apm-cli) (from versions: none)\u001b[0m\u001b[31m\n\u001b[0m\u001b[31mERROR: No matching distribution found for click>=8.0.0\u001b[0m\u001b[31m\n\u001b[0m",
+          "stdoutSha256": "0170dcbcdfef48e36a975fb3ef206cb2972ee8ad1980c411aae787f50d9c8ef6",
+          "stderrSha256": "03a0c70a61aee1433d00d71eccdd4c3ca5ba4978709f6492042ac5b0ea950cd8",
+          "stdoutTruncated": false,
+          "stderrTruncated": false
+        },
+        "wheelOnlyInstall": {
+          "exitCode": 0,
+          "reason": "exited",
+          "ok": true,
+          "stdout": "Processing ./wheels/apm_cli-0.8.12-py3-none-any.whl\nInstalling collected packages: apm-cli\nSuccessfully installed apm-cli-0.8.12\n",
+          "stderr": "\u001b[33mWARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.\u001b[0m\u001b[33m\n\u001b[0m",
+          "stdoutSha256": "60852fed49dcb115414dfb5eba94c4854f5b85f88002dd8d75eb7f84494a20d5",
+          "stderrSha256": "9fe799b9216df4b602a51be4b4c6de4164af51dffd3a512e4a953b73008ed851",
+          "stdoutTruncated": false,
+          "stderrTruncated": false
+        },
+        "fullCliImportAfterWheelOnlyInstall": {
+          "exitCode": 1,
+          "reason": "exited",
+          "ok": false,
+          "stdout": "",
+          "stderr": "Traceback (most recent call last):\n  File \u001b[35m\"<frozen runpy>\"\u001b[0m, line \u001b[35m203\u001b[0m, in \u001b[35m_run_module_as_main\u001b[0m\n  File \u001b[35m\"<frozen runpy>\"\u001b[0m, line \u001b[35m88\u001b[0m, in \u001b[35m_run_code\u001b[0m\n  File \u001b[35m\"/workspace/site/apm_cli/cli.py\"\u001b[0m, line \u001b[35m10\u001b[0m, in \u001b[35m<module>\u001b[0m\n    import click\n\u001b[1;35mModuleNotFoundError\u001b[0m: \u001b[35mNo module named 'click'\u001b[0m\n",
+          "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderrSha256": "843520edd095d5b35782397e70c91cb0f33976b7943b241bbdb40ef354bf4b81",
+          "stdoutTruncated": false,
+          "stderrTruncated": false
+        }
+      },
+      "narrowExecution": {
+        "classification": "public wheel, exact normalize_plugin_directory path, YAML serialization shim only",
+        "command": "python /workspace/runner.py",
+        "result": {
+          "exitCode": 0,
+          "reason": "exited",
+          "ok": true,
+          "stdout": "{\"called\": \"apm_cli.deps.plugin_parser.normalize_plugin_directory\", \"effect_path\": \"/workspace/project/untrusted-plugin/.apm/prompts/synthetic-canary.prompt.md\", \"generated\": \"/workspace/project/untrusted-plugin/apm.yml\"}\n",
+          "stderr": "Skipping commands entry: path escapes plugin root\n",
+          "stdoutSha256": "786a4221589ff6fc99a4ed21b66ecffd0ad8e7859acaaa84c1bf52e997254b63",
+          "stderrSha256": "c647dac048edb34c990f5dc5cd327381da38c13740ffec34679e7d2b6af22630",
+          "stdoutTruncated": false,
+          "stderrTruncated": false
+        }
+      },
+      "hostObservation": {
+        "source": {
+          "path": "/workspace/control/synthetic-canary.md",
+          "present": true,
+          "byteLength": 31,
+          "sha256": "31ee0784a78b5d030c8b6279d24196694b9b045734a2f14325ae97377505f549",
+          "exactSyntheticCanaryMatch": true
+        },
+        "effect": {
+          "path": "/workspace/project/untrusted-plugin/.apm/prompts/synthetic-canary.prompt.md",
+          "present": false,
+          "byteLength": null,
+          "sha256": null,
+          "exactSyntheticCanaryMatch": false,
+          "readError": "filesystem operation `open` failed for `/workspace/project/untrusted-plugin/.apm/prompts/synthetic-canary.prompt.md`: entry not found"
+        },
+        "assessment": "effect_not_observed"
+      }
+    },
+    {
+      "id": "vulnerable-positive-control",
+      "role": "positive_control",
+      "package": {
+        "name": "apm-cli",
+        "version": "0.8.11",
+        "source": "https://pypi.org/project/apm-cli/0.8.11/",
+        "wheel": "apm_cli-0.8.11-py3-none-any.whl",
+        "wheelByteLength": 462313,
+        "wheelSha256": "268a3832035d15568d9a395f40ac36fc1e66e98f116e2ba961662420a142b723"
+      },
+      "expectedEffect": "present_exact",
+      "networkCapability": "disabled",
+      "hostFilesystemMounts": [],
+      "runtimeVersion": {
+        "exitCode": 0,
+        "reason": "exited",
+        "ok": true,
+        "stdout": "Python 3.13.15\n",
+        "stderr": "",
+        "stdoutSha256": "322f765b04793d55160c8788550761630087e4847a77ed7a1090d79791f73c3b",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdoutTruncated": false,
+        "stderrTruncated": false
+      },
+      "compatibilityAttempts": {
+        "fullOfflineDependencyInstall": {
+          "exitCode": 1,
+          "reason": "exited",
+          "ok": false,
+          "stdout": "Looking in links: /workspace/wheels\nProcessing ./wheels/apm_cli-0.8.11-py3-none-any.whl\nINFO: pip is looking at multiple versions of apm-cli to determine which version is compatible with other requirements. This could take a while.\n",
+          "stderr": "\u001b[31mERROR: Could not find a version that satisfies the requirement click>=8.0.0 (from apm-cli) (from versions: none)\u001b[0m\u001b[31m\n\u001b[0m\u001b[31mERROR: No matching distribution found for click>=8.0.0\u001b[0m\u001b[31m\n\u001b[0m",
+          "stdoutSha256": "0521aad890b5f1dfffcd36f99fd84de7ae2e75f54138a699bdacf3f3899f60fa",
+          "stderrSha256": "03a0c70a61aee1433d00d71eccdd4c3ca5ba4978709f6492042ac5b0ea950cd8",
+          "stdoutTruncated": false,
+          "stderrTruncated": false
+        },
+        "wheelOnlyInstall": {
+          "exitCode": 0,
+          "reason": "exited",
+          "ok": true,
+          "stdout": "Processing ./wheels/apm_cli-0.8.11-py3-none-any.whl\nInstalling collected packages: apm-cli\nSuccessfully installed apm-cli-0.8.11\n",
+          "stderr": "\u001b[33mWARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.\u001b[0m\u001b[33m\n\u001b[0m",
+          "stdoutSha256": "6856558d272bc9da991e93954050aa5b40cd764f33d84858e4eb93c04a99fc7e",
+          "stderrSha256": "9fe799b9216df4b602a51be4b4c6de4164af51dffd3a512e4a953b73008ed851",
+          "stdoutTruncated": false,
+          "stderrTruncated": false
+        },
+        "fullCliImportAfterWheelOnlyInstall": {
+          "exitCode": 1,
+          "reason": "exited",
+          "ok": false,
+          "stdout": "",
+          "stderr": "Traceback (most recent call last):\n  File \u001b[35m\"<frozen runpy>\"\u001b[0m, line \u001b[35m203\u001b[0m, in \u001b[35m_run_module_as_main\u001b[0m\n  File \u001b[35m\"<frozen runpy>\"\u001b[0m, line \u001b[35m88\u001b[0m, in \u001b[35m_run_code\u001b[0m\n  File \u001b[35m\"/workspace/site/apm_cli/cli.py\"\u001b[0m, line \u001b[35m10\u001b[0m, in \u001b[35m<module>\u001b[0m\n    import click\n\u001b[1;35mModuleNotFoundError\u001b[0m: \u001b[35mNo module named 'click'\u001b[0m\n",
+          "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderrSha256": "843520edd095d5b35782397e70c91cb0f33976b7943b241bbdb40ef354bf4b81",
+          "stdoutTruncated": false,
+          "stderrTruncated": false
+        }
+      },
+      "narrowExecution": {
+        "classification": "public wheel, exact normalize_plugin_directory path, YAML serialization shim only",
+        "command": "python /workspace/runner.py",
+        "result": {
+          "exitCode": 0,
+          "reason": "exited",
+          "ok": true,
+          "stdout": "{\"called\": \"apm_cli.deps.plugin_parser.normalize_plugin_directory\", \"effect_path\": \"/workspace/project/untrusted-plugin/.apm/prompts/synthetic-canary.prompt.md\", \"generated\": \"/workspace/project/untrusted-plugin/apm.yml\"}\n",
+          "stderr": "",
+          "stdoutSha256": "786a4221589ff6fc99a4ed21b66ecffd0ad8e7859acaaa84c1bf52e997254b63",
+          "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdoutTruncated": false,
+          "stderrTruncated": false
+        }
+      },
+      "hostObservation": {
+        "source": {
+          "path": "/workspace/control/synthetic-canary.md",
+          "present": true,
+          "byteLength": 31,
+          "sha256": "31ee0784a78b5d030c8b6279d24196694b9b045734a2f14325ae97377505f549",
+          "exactSyntheticCanaryMatch": true
+        },
+        "effect": {
+          "path": "/workspace/project/untrusted-plugin/.apm/prompts/synthetic-canary.prompt.md",
+          "present": true,
+          "byteLength": 31,
+          "sha256": "31ee0784a78b5d030c8b6279d24196694b9b045734a2f14325ae97377505f549",
+          "exactSyntheticCanaryMatch": true,
+          "readError": null
+        },
+        "assessment": "effect_observed"
+      }
+    },
+    {
+      "id": "remediated-target",
+      "role": "target_after",
+      "package": {
+        "name": "apm-cli",
+        "version": "0.8.12",
+        "source": "https://pypi.org/project/apm-cli/0.8.12/",
+        "wheel": "apm_cli-0.8.12-py3-none-any.whl",
+        "wheelByteLength": 513557,
+        "wheelSha256": "d252a1364b52cf14dde7ca3a25dbd3af949e0d573d3f163fa3ac76757aec5961"
+      },
+      "expectedEffect": "absent",
+      "networkCapability": "disabled",
+      "hostFilesystemMounts": [],
+      "runtimeVersion": {
+        "exitCode": 0,
+        "reason": "exited",
+        "ok": true,
+        "stdout": "Python 3.13.15\n",
+        "stderr": "",
+        "stdoutSha256": "322f765b04793d55160c8788550761630087e4847a77ed7a1090d79791f73c3b",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdoutTruncated": false,
+        "stderrTruncated": false
+      },
+      "compatibilityAttempts": {
+        "fullOfflineDependencyInstall": {
+          "exitCode": 1,
+          "reason": "exited",
+          "ok": false,
+          "stdout": "Looking in links: /workspace/wheels\nProcessing ./wheels/apm_cli-0.8.12-py3-none-any.whl\nINFO: pip is looking at multiple versions of apm-cli to determine which version is compatible with other requirements. This could take a while.\n",
+          "stderr": "\u001b[31mERROR: Could not find a version that satisfies the requirement click>=8.0.0 (from apm-cli) (from versions: none)\u001b[0m\u001b[31m\n\u001b[0m\u001b[31mERROR: No matching distribution found for click>=8.0.0\u001b[0m\u001b[31m\n\u001b[0m",
+          "stdoutSha256": "0170dcbcdfef48e36a975fb3ef206cb2972ee8ad1980c411aae787f50d9c8ef6",
+          "stderrSha256": "03a0c70a61aee1433d00d71eccdd4c3ca5ba4978709f6492042ac5b0ea950cd8",
+          "stdoutTruncated": false,
+          "stderrTruncated": false
+        },
+        "wheelOnlyInstall": {
+          "exitCode": 0,
+          "reason": "exited",
+          "ok": true,
+          "stdout": "Processing ./wheels/apm_cli-0.8.12-py3-none-any.whl\nInstalling collected packages: apm-cli\nSuccessfully installed apm-cli-0.8.12\n",
+          "stderr": "\u001b[33mWARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.\u001b[0m\u001b[33m\n\u001b[0m",
+          "stdoutSha256": "60852fed49dcb115414dfb5eba94c4854f5b85f88002dd8d75eb7f84494a20d5",
+          "stderrSha256": "9fe799b9216df4b602a51be4b4c6de4164af51dffd3a512e4a953b73008ed851",
+          "stdoutTruncated": false,
+          "stderrTruncated": false
+        },
+        "fullCliImportAfterWheelOnlyInstall": {
+          "exitCode": 1,
+          "reason": "exited",
+          "ok": false,
+          "stdout": "",
+          "stderr": "Traceback (most recent call last):\n  File \u001b[35m\"<frozen runpy>\"\u001b[0m, line \u001b[35m203\u001b[0m, in \u001b[35m_run_module_as_main\u001b[0m\n  File \u001b[35m\"<frozen runpy>\"\u001b[0m, line \u001b[35m88\u001b[0m, in \u001b[35m_run_code\u001b[0m\n  File \u001b[35m\"/workspace/site/apm_cli/cli.py\"\u001b[0m, line \u001b[35m10\u001b[0m, in \u001b[35m<module>\u001b[0m\n    import click\n\u001b[1;35mModuleNotFoundError\u001b[0m: \u001b[35mNo module named 'click'\u001b[0m\n",
+          "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderrSha256": "843520edd095d5b35782397e70c91cb0f33976b7943b241bbdb40ef354bf4b81",
+          "stdoutTruncated": false,
+          "stderrTruncated": false
+        }
+      },
+      "narrowExecution": {
+        "classification": "public wheel, exact normalize_plugin_directory path, YAML serialization shim only",
+        "command": "python /workspace/runner.py",
+        "result": {
+          "exitCode": 0,
+          "reason": "exited",
+          "ok": true,
+          "stdout": "{\"called\": \"apm_cli.deps.plugin_parser.normalize_plugin_directory\", \"effect_path\": \"/workspace/project/untrusted-plugin/.apm/prompts/synthetic-canary.prompt.md\", \"generated\": \"/workspace/project/untrusted-plugin/apm.yml\"}\n",
+          "stderr": "Skipping commands entry: path escapes plugin root\n",
+          "stdoutSha256": "786a4221589ff6fc99a4ed21b66ecffd0ad8e7859acaaa84c1bf52e997254b63",
+          "stderrSha256": "c647dac048edb34c990f5dc5cd327381da38c13740ffec34679e7d2b6af22630",
+          "stdoutTruncated": false,
+          "stderrTruncated": false
+        }
+      },
+      "hostObservation": {
+        "source": {
+          "path": "/workspace/control/synthetic-canary.md",
+          "present": true,
+          "byteLength": 31,
+          "sha256": "31ee0784a78b5d030c8b6279d24196694b9b045734a2f14325ae97377505f549",
+          "exactSyntheticCanaryMatch": true
+        },
+        "effect": {
+          "path": "/workspace/project/untrusted-plugin/.apm/prompts/synthetic-canary.prompt.md",
+          "present": false,
+          "byteLength": null,
+          "sha256": null,
+          "exactSyntheticCanaryMatch": false,
+          "readError": "filesystem operation `open` failed for `/workspace/project/untrusted-plugin/.apm/prompts/synthetic-canary.prompt.md`: entry not found"
+        },
+        "assessment": "effect_not_observed"
+      }
+    }
+  ],
+  "gate": {
+    "fullPackageCompatible": false,
+    "fullPackageStatus": "not_demonstrated_missing_offline_dependencies",
+    "narrowExactPathPassed": true,
+    "initial": {
+      "assessment": "OBSERVED",
+      "passed": true,
+      "targetCaseId": "vulnerable-target",
+      "fixedControlCaseId": "fixed-control",
+      "positiveControlCaseId": "vulnerable-positive-control",
+      "rule": "target present AND fixed control absent AND positive control present"
+    },
+    "remediation": {
+      "assessment": "REMEDIATED",
+      "passed": true,
+      "targetCaseId": "remediated-target",
+      "positiveControlCaseId": "vulnerable-positive-control",
+      "rule": "remediated target absent AND independent positive control present"
+    },
+    "verdict": "pass_narrow_exact_affected_path_with_independent_controls",
+    "trustedDecisionSource": "host-read guest filesystem bytes",
+    "guestOutputCanSelectVerdict": false
+  },
+  "limitations": [
+    "The full apm CLI dependency graph was not vendored into the guest wheelhouse.",
+    "The narrowed run imports the exact affected function from each public wheel; it does not execute the complete apm install command.",
+    "A minimal YAML serialization shim is used only because the affected copy path does not call PyYAML.",
+    "The requested python/python package version reports its own interpreter build in each case result.",
+    "Target, fixed control, independent positive control, and remediated target each run in a fresh sandbox."
+  ]
+}
