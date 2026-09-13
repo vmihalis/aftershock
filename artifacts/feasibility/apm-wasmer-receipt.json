@@ -1,16 +1,16 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-09-13T23:25:19.625Z",
+  "generatedAt": "2026-09-13T23:51:30.970Z",
   "advisory": {
     "id": "GHSA-xhrw-5qxx-jpwr",
     "cve": "CVE-2026-44641",
     "url": "https://github.com/microsoft/apm/security/advisories/GHSA-xhrw-5qxx-jpwr"
   },
   "repository": {
-    "sha": null,
-    "headSha": null,
-    "state": "uncommitted initial working tree",
-    "dirty": true
+    "sha": "f72d1c329a0958aaeff1bb3906db5a4e302724e7",
+    "headSha": "f72d1c329a0958aaeff1bb3906db5a4e302724e7",
+    "state": "clean",
+    "dirty": false
   },
   "capsule": {
     "path": "experiments/apm-wasmer/run-feasibility.mjs",
