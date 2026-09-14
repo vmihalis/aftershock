@@ -50,6 +50,8 @@ Start the UI API:
 npm run dev
 ```
 
+Open [`http://127.0.0.1:4317`](http://127.0.0.1:4317). The integrated run-detail page can reset and advance the six evidence frames; use `R` to reset and `→` or Space to advance during a recording.
+
 - `GET /api/view` — current run-detail projection
 - `POST /api/demo/reset` — reset the deterministic presentation
 - `POST /api/demo/advance` — advance one video beat

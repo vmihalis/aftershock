@@ -48,3 +48,32 @@ test("a signed push adapter can invalidate evidence for its exact new head", () 
   assert.equal(view.repository.headSha, headSha);
   assert.throws(() => controller.invalidateForHead("short"), /full 40-character Git SHA/);
 });
+
+test("demo frames expose their real public GitHub evidence", () => {
+  const controller = new DemoController();
+  controller.advance();
+  let view = controller.advance();
+  assert.equal(
+    view.artifacts.find((artifact) => artifact.kind === "github_check")?.url,
+    "https://github.com/vmihalis/aftershock-apm-fixture/runs/103819046282",
+  );
+  assert.equal(view.artifacts.some((artifact) => artifact.kind === "github_issue"), false);
+
+  view = controller.advance();
+  assert.equal(
+    view.artifacts.find((artifact) => artifact.kind === "github_issue")?.url,
+    "https://github.com/vmihalis/aftershock-apm-fixture/issues/1",
+  );
+
+  view = controller.advance();
+  assert.equal(
+    view.artifacts.find((artifact) => artifact.kind === "github_check")?.url,
+    "https://github.com/vmihalis/aftershock-apm-fixture/runs/103819189475",
+  );
+
+  view = controller.advance();
+  assert.equal(
+    view.artifacts.find((artifact) => artifact.kind === "github_check")?.url,
+    "https://github.com/vmihalis/aftershock-apm-fixture/runs/103819288142",
+  );
+});

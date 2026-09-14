@@ -6,6 +6,26 @@ import { shortHash } from "./view.js";
 const SYNTHETIC_CANARY = "AFTERSHOCK_SYNTHETIC_CANARY_V1\n";
 const CANARY_HASH = shortHash(SYNTHETIC_CANARY);
 const EMPTY_HASH = shortHash("");
+const LIFECYCLE_ISSUE_URL = "https://github.com/vmihalis/aftershock-apm-fixture/issues/1";
+
+const checkArtifactByFrame: Partial<Record<number, { label: string; url: string }>> = {
+  3: {
+    label: "Live failing Check · observed effect",
+    url: "https://github.com/vmihalis/aftershock-apm-fixture/runs/103819046282",
+  },
+  4: {
+    label: "Live failing Check · observed effect",
+    url: "https://github.com/vmihalis/aftershock-apm-fixture/runs/103819046282",
+  },
+  5: {
+    label: "Live passing Check · remediation retested",
+    url: "https://github.com/vmihalis/aftershock-apm-fixture/runs/103819189475",
+  },
+  6: {
+    label: "Live neutral Check · evidence stale",
+    url: "https://github.com/vmihalis/aftershock-apm-fixture/runs/103819288142",
+  },
+};
 
 type Frame = {
   state: AssessmentState;
@@ -146,8 +166,19 @@ export class DemoController extends EventEmitter {
       };
     };
     const capsuleDigest = shortHash("GHSA-xhrw-5qxx-jpwr:r1:apm-path-boundary-v1");
+    const frameNumber = this.#index + 1;
+    const artifacts: AftershockView["artifacts"] = [
+      { kind: "source", label: "Official Microsoft advisory", url: "https://github.com/microsoft/apm/security/advisories/GHSA-xhrw-5qxx-jpwr" },
+      { kind: "fixture", label: "Authorized public fixture", url: "https://github.com/vmihalis/aftershock-apm-fixture" },
+      { kind: "receipt", label: "Recorded Wasmer receipt", url: "/api/feasibility/receipt" },
+    ];
+    const checkArtifact = checkArtifactByFrame[frameNumber];
+    if (checkArtifact) artifacts.push({ kind: "github_check", ...checkArtifact });
+    if (frameNumber >= 4) {
+      artifacts.push({ kind: "github_issue", label: "Live lifecycle Issue · full state history", url: LIFECYCLE_ISSUE_URL });
+    }
     return {
-      meta: { mode: "demo-fixture", syntheticCanary: true, frame: this.#index + 1, frameCount: frames.length },
+      meta: { mode: "demo-fixture", syntheticCanary: true, frame: frameNumber, frameCount: frames.length },
       incident: {
         id: "GHSA-xhrw-5qxx-jpwr",
         title: "Microsoft APM plugin path escape",
@@ -182,11 +213,7 @@ export class DemoController extends EventEmitter {
         row("after", "Project after patch"),
       ],
       events,
-      artifacts: [
-        { kind: "source", label: "Official Microsoft advisory", url: "https://github.com/microsoft/apm/security/advisories/GHSA-xhrw-5qxx-jpwr" },
-        { kind: "fixture", label: "Authorized public fixture", url: "https://github.com/vmihalis/aftershock-apm-fixture" },
-        { kind: "receipt", label: "Recorded Wasmer receipt", url: "/api/feasibility/receipt" },
-      ],
+      artifacts,
     };
   }
 }

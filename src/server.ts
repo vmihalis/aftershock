@@ -9,6 +9,12 @@ import { triggerFromPush, verifyWebhookSignature } from "./github/webhook.js";
 
 const controller = new DemoController();
 const port = Number.parseInt(process.env.PORT ?? "4317", 10);
+const publicDirectory = resolve(process.env.AFTERSHOCK_PUBLIC_DIR ?? "public");
+const publicAssets = new Map([
+  ["/", { file: "index.html", type: "text/html; charset=utf-8" }],
+  ["/styles.css", { file: "styles.css", type: "text/css; charset=utf-8" }],
+  ["/app.js", { file: "app.js", type: "text/javascript; charset=utf-8" }],
+]);
 
 function sendJson(response: ServerResponse, status: number, value: unknown): void {
   response.writeHead(status, {
@@ -48,6 +54,24 @@ async function route(request: IncomingMessage, response: ServerResponse): Promis
       "access-control-allow-headers": "content-type",
     });
     response.end();
+    return;
+  }
+  if (request.method === "GET" && publicAssets.has(url.pathname)) {
+    const asset = publicAssets.get(url.pathname)!;
+    try {
+      const bytes = await readFile(resolve(publicDirectory, asset.file));
+      response.writeHead(200, {
+        "content-type": asset.type,
+        "cache-control": "no-store",
+        "content-security-policy": "default-src 'self'; connect-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'",
+        "x-content-type-options": "nosniff",
+        "referrer-policy": "no-referrer",
+      });
+      response.end(bytes);
+    } catch (error) {
+      const missing = error instanceof Error && "code" in error && error.code === "ENOENT";
+      sendJson(response, missing ? 404 : 500, { error: missing ? "ui_asset_not_found" : "ui_asset_read_failed" });
+    }
     return;
   }
   if (request.method === "GET" && url.pathname === "/health") {
