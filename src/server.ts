@@ -5,7 +5,7 @@ import { DemoController } from "./api/demo-controller.js";
 import { buildDeterministicDemoSequence } from "./core/index.js";
 import { projectCheck, projectIssue } from "./github/projections.js";
 import { publishWithInstallation } from "./github/publisher.js";
-import { triggerFromPush, verifyWebhookSignature } from "./github/webhook.js";
+import { scopePushTrigger, verifyWebhookSignature } from "./github/webhook.js";
 
 const controller = new DemoController();
 const port = Number.parseInt(process.env.PORT ?? "4317", 10);
@@ -132,16 +132,38 @@ async function route(request: IncomingMessage, response: ServerResponse): Promis
       sendJson(response, 400, { error: "invalid_json" });
       return;
     }
-    const trigger = triggerFromPush(payload);
-    if (!trigger) {
+    const monitoredRepository = controller.view().repository;
+    const scopedTrigger = scopePushTrigger(
+      payload,
+      monitoredRepository.fullName,
+      `refs/heads/${monitoredRepository.branch}`,
+    );
+    if (scopedTrigger.status === "invalid") {
       sendJson(response, 422, { error: "invalid_push_payload" });
       return;
     }
+    if (scopedTrigger.status === "ignored") {
+      sendJson(response, 202, { accepted: true, ignored: scopedTrigger.reason });
+      return;
+    }
+    const trigger = scopedTrigger.trigger;
     const view = controller.invalidateForHead(trigger.headSha);
     const installationId = installationIdFrom(payload);
-    const published = process.env.AFTERSHOCK_PUBLISH_GITHUB === "1" && installationId
-      ? await publishWithInstallation(installationId, view)
-      : null;
+    let published: Awaited<ReturnType<typeof publishWithInstallation>> | null = null;
+    if (process.env.AFTERSHOCK_PUBLISH_GITHUB === "1" && installationId) {
+      try {
+        published = await publishWithInstallation(installationId, view);
+      } catch {
+        sendJson(response, 502, {
+          accepted: true,
+          trigger,
+          view,
+          published: null,
+          error: "github_publication_failed",
+        });
+        return;
+      }
+    }
     sendJson(response, 202, { accepted: true, trigger, view, published });
     return;
   }
@@ -164,8 +186,9 @@ async function route(request: IncomingMessage, response: ServerResponse): Promis
 const server = createServer((request, response) => {
   void route(request, response).catch((error: unknown) => {
     if (!response.headersSent) {
-      sendJson(response, error instanceof Error && error.message === "request_body_too_large" ? 413 : 500, {
-        error: error instanceof Error ? error.message : "internal_error",
+      const requestTooLarge = error instanceof Error && error.message === "request_body_too_large";
+      sendJson(response, requestTooLarge ? 413 : 500, {
+        error: requestTooLarge ? "request_body_too_large" : "internal_error",
       });
     } else {
       response.end();

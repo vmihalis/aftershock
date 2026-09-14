@@ -14,8 +14,16 @@ test("observed effect becomes a failing Check and an open Issue", () => {
   assert.equal(check.conclusion, "failure");
   assert.equal(check.head_sha, view.repository.headSha);
   assert.equal(issue.shouldBeOpen, true);
+  assert.match(check.output.summary, /deterministic fixture replay/i);
+  assert.match(check.output.summary, /No fresh execution occurred/i);
+  assert.match(check.output.summary, /not bound to this assessment/i);
+  assert.match(issue.body, /deterministic fixture replay/i);
+  assert.match(issue.body, /not fresh measurements/i);
   assert.match(issue.body, /synthetic canary/i);
   assert.match(issue.body, new RegExp(view.capsule.digest));
+  assert.match(check.output.text, /"freshExecution": false/);
+  assert.match(check.output.text, /"repositoryShaFreshlyTested": false/);
+  assert.match(issue.body, /"savedExperimentalReceiptBound": false/);
 });
 
 test("retested remediation becomes success and closes the task", () => {
@@ -32,6 +40,7 @@ test("stale evidence is neutral and reopens the task", () => {
   while (view.meta.frame < view.meta.frameCount) view = controller.advance();
   assert.equal(projectCheck(view).conclusion, "neutral");
   assert.equal(projectIssue(view).shouldBeOpen, true);
+  assert.ok(view.matrix.every((row) => row.status === "pending"));
 });
 
 test("webhook signature and push trigger are fail closed", () => {

@@ -1,102 +1,70 @@
 # Aftershock
 
-**Aftershock turns a new security advisory into evidence-bound work for a coding agent.**
+**Security context for coding agents, with evidence that expires when the code changes.**
 
-It matches an advisory to an exact repository revision, runs an admitted Threat Capsule with restricted capabilities, publishes a GitHub Check and deduplicated Issue, retests the remediation, and withdraws yesterday's reassurance when either the code or the capsule changes.
+Aftershock explores: “That vulnerability was in the news. What does my coding agent need to know about my project?” The prototype separates a dependency match, an observed effect, a retested remediation and stale evidence, and turns those states into structured GitHub work.
 
-```text
-new advisory -> exact project match -> restricted check -> Check + agent Issue
-             -> remediation commit -> same check -> new head makes old evidence stale
-```
+This repository contains a tested assessment engine, a deterministic API/presentation replay, GitHub publication adapters, and a separate recorded Wasmer experiment. They demonstrate the intended workflow; they are not yet a fully connected continuous monitoring service.
 
-## Three-minute hero path
+## Review with a coding agent
 
-The hackathon demo uses Microsoft's public `GHSA-xhrw-5qxx-jpwr` / `CVE-2026-44641` advisory, the authorized public [`vmihalis/aftershock-apm-fixture`](https://github.com/vmihalis/aftershock-apm-fixture) repository, and a synthetic 31-byte canary.
+Start with [EVALUATION.md](EVALUATION.md) for the architecture, claim-to-test map and evidence limits. [EVALUATION.json](EVALUATION.json) supplies structured entry points and artifact identities.
 
-1. A fixture repository pins affected `apm-cli==0.8.11`.
-2. Aftershock reports `POTENTIALLY_AFFECTED`; a version match is not called exploitation.
-3. Wasmer starts fresh Python guest sandboxes with network disabled, no credentials, and no host mounts.
-4. The trusted host observes the exact canary bytes copied by the affected `normalize_plugin_directory` path in the public `0.8.11` wheel.
-5. The same path in `0.8.12` rejects the escaping source. A separate `0.8.11` positive control must remain sensitive.
-6. Aftershock creates a failing Check and a structured Issue for the coding agent.
-7. The dependency update is retested. A later repository SHA changes the result to `EVIDENCE_STALE_FOR_CURRENT_HEAD` and queues reassessment.
-
-The feasibility receipt labels its scope precisely: this is the exact affected function from the two public wheels with a minimal YAML serialization shim. It is not a claim that the complete `apm install` command ran in Wasmer; the full offline dependency graph is currently incomplete and that attempt is preserved in the receipt.
-
-## Run it
-
-Requirements: Node.js 24 and npm.
+With Node.js 24 or newer:
 
 ```bash
 npm ci
-npm test
-npm run lint
-npm run build
+npm run evaluate
+```
+
+Evaluation checks bundled receipt integrity, unit tests, TypeScript and the build. It requires no credentials, performs no GitHub publication and does not start Wasmer or execute a target. Dependency installation needs registry access; evaluation after installation uses local files. For machine-readable results:
+
+```bash
+npm run --silent evaluate -- --json
+```
+
+The video/submission snapshot is [`8725dbd`](https://github.com/vmihalis/aftershock/tree/8725dbd07fbb2ea6d2f9a5bf8e921fd70f1a24a1), retained by the [`demo-video` release](https://github.com/vmihalis/aftershock/releases/tag/demo-video). Later commits improve evaluation, documentation and defensive correctness; they are not represented as part of that snapshot.
+
+## What is implemented
+
+| Component | Behavior | Boundary |
+|---|---|---|
+| Applicability | Match an advisory against supplied inventory at an exact SHA | No inventory collector or news feed |
+| Adjudication | Evaluate captured-file observations and target/fixed/positive controls | Tests supply synthetic observations |
+| Evidence lifecycle | Immutable records, supersession and invalidation on SHA/source/capsule changes | In-memory records; no persistent scheduler or ledger |
+| GitHub adapters | Generate Checks and deduplicated Issues; publish with configuration | Public fixture workflow is manually dispatched |
+| API and CLI | Six-frame fixture replay with provenance and historical links | No fresh verification or receipt-derived states |
+| Wasmer experiment | Saved four-guest record for a narrow path in two public APM wheels | Separate contract from canonical r1; full APM CLI not demonstrated |
+
+## Inspect the lifecycle
+
+```bash
 npm run demo
-```
-
-Run the real Wasmer feasibility capsule:
-
-```bash
-npm run verify:apm
-npm run verify:receipt
-```
-
-The first Wasmer run needs access to fetch the pinned runtime package. Every guest created by the capsule has network disabled. Later runs use the experiment-local cache.
-
-Start the UI API:
-
-```bash
 npm run dev
 ```
 
-Open [`http://127.0.0.1:4317`](http://127.0.0.1:4317). The integrated run-detail page can reset and advance the six evidence frames; use `R` to reset and `→` or Space to advance during a recording.
+The CLI prints fixture frames. The server binds to [127.0.0.1:4317](http://127.0.0.1:4317) and serves:
 
-- `GET /api/view` — current run-detail projection
-- `POST /api/demo/reset` — reset the deterministic presentation
-- `POST /api/demo/advance` — advance one video beat
-- `GET /api/events` — server-sent view updates
-- `GET /api/github/projection` — Check and Issue payloads without publishing
-- `GET /api/core/sequence` — immutable canonical lifecycle records
-- `GET /api/feasibility/receipt` — recorded Wasmer byte evidence and limitations
-- `POST /api/github/webhook` — verify a GitHub push signature and invalidate evidence for the new head
+- `GET /api/view`: presentation frame labelled as replay.
+- `GET /api/core/sequence`: canonical records from authored observations.
+- `GET /api/github/projection`: Check/Issue payloads without publishing.
+- `GET /api/feasibility/receipt`: original experiment record.
+- `GET /api/events`: presentation updates over SSE.
+- `POST /api/demo/reset` and `/api/demo/advance`: local presentation controls.
+- `POST /api/github/webhook`: signed, scoped push handling; invalidates evidence and optionally publishes, without scheduling a retest.
 
-The replay API is explicitly marked `meta.mode: "demo-fixture"`. Recorded Wasmer evidence is stored under `artifacts/feasibility/`; do not present fixture frames as fresh execution.
+## Recorded evidence
 
-## Publish the real GitHub demo artifacts
+The experiment concerns Microsoft's public [APM advisory](https://github.com/microsoft/apm/security/advisories/GHSA-xhrw-5qxx-jpwr), affected `apm-cli` 0.8.11 and fixed 0.8.12. Its four recorded cases use synthetic canary bytes, no host mounts and disabled guest networking. The [receipt](artifacts/feasibility/apm-wasmer-receipt.json) preserves both the incomplete full dependency install and the successful narrower function-level run with a YAML shim.
 
-The authorized fixture includes a manually dispatched [Aftershock demo publisher](https://github.com/vmihalis/aftershock-apm-fixture/actions/workflows/aftershock-demo.yml). It checks out this engine, uses the fixture repository's scoped `GITHUB_TOKEN`, and calls:
+`npm run verify:bundled` checks committed harness/wheel hashes and consistency of recorded observations. It explicitly reports the unbundled runtime as `NOT_CHECKED`. `npm run verify:receipt` also requires the original local runtime artifact and checks its hash. Neither command executes the experiment or independently authenticates its historical outcome.
 
-```bash
-npm run publish:action -- --frame 3  # failing observed-effect Check + open Issue
-npm run publish:action -- --frame 5  # successful remediation Check + closed Issue
-npm run publish:action -- --frame 6  # neutral stale-evidence Check + reopened Issue
-```
+The receipt's harness hash and canary contract differ from the core Threat Capsule. [EVALUATION.md](EVALUATION.md#recorded-evidence-and-identity) explains this boundary. Passing verification is not a fresh vulnerability assessment of this checkout or any fixture SHA.
 
-The demo adapter fails closed unless it is running in `vmihalis/aftershock-apm-fixture`. General installations use the GitHub App webhook path described below.
+Historical publication artifacts: [agent Issue](https://github.com/vmihalis/aftershock-apm-fixture/issues/1), [observed-state Check](https://github.com/vmihalis/aftershock-apm-fixture/runs/103819046282), [remediation-state Check](https://github.com/vmihalis/aftershock-apm-fixture/runs/103819189475), [stale-state Check](https://github.com/vmihalis/aftershock-apm-fixture/runs/103819288142). They demonstrate publication of fixture state, not independent runtime attestation.
 
-## Evidence rules
+## Self-hosting scope
 
-Aftershock keeps these claims separate:
+The source is MIT licensed. The server runs locally; GitHub publication requires an App or scoped Actions token. [EVALUATION.md](EVALUATION.md#configuration-and-limitations) documents the configuration and missing production pieces. Wasmer supplies the experiment's guest execution substrate. No Tenki integration is implemented.
 
-- `POTENTIALLY_AFFECTED`: project evidence matches an affected range.
-- `OBSERVED_BY_CHECK`: host-captured bytes satisfy the target, fixed-control, and independent positive-control matrix.
-- `REMEDIATION_RETESTED`: the patched target no longer shows that exact effect and the positive control still does.
-- `UNKNOWN`: a required observation or control failed, timed out, or disagreed.
-- `EVIDENCE_STALE_FOR_CURRENT_HEAD`: the repository SHA, source revision, capsule revision, or capsule digest changed.
-
-Guest stdout cannot select a verdict. The engine binds assessments to full repository SHAs and capsule digests, preserves append-only supersession, and treats incomplete inventory or capture as unknown.
-
-## Optional live GitHub publication
-
-Create a GitHub App with read access to contents and write access to Checks and Issues. Subscribe it to push events, configure `.env.example`, and set `AFTERSHOCK_PUBLISH_GITHUB=1`. The webhook handler obtains an installation client, creates a commit-bound Check, and creates, updates, reopens, or closes the deduplicated agent Issue.
-
-Keep the service and fixture repository under your control. The demo does not test third-party systems or use real secrets.
-
-## New-work boundary
-
-This repository was created for the hackathon. It contains no Hacker Bob code, services, fixtures, schemas, or branding. General differential testing and positive controls are established security methods; Aftershock's contribution is the proactive advisory-to-agent workflow and the lifecycle that automatically invalidates stale evidence.
-
-## License
-
-Aftershock is MIT licensed. The vendored Microsoft APM wheel artifacts retain their own MIT license metadata and hashes.
+This repository contains no Hacker Bob code, services, fixtures, schemas or branding. Differential testing and positive controls are established methods. Aftershock's proposed contribution is connecting advisory context, agent work and evidence invalidation. Vendored Microsoft APM wheels retain their MIT license metadata and recorded hashes.

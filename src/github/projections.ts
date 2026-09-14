@@ -31,7 +31,7 @@ function matrixMarkdown(view: AftershockView): string {
     `| ${row.label} | ${row.status} | ${row.effect} | \`${row.beforeHash}\` | \`${row.afterHash}\` |`,
   );
   return [
-    "| Run | Status | Host-observed effect | Before | After |",
+    "| Run | Status | Deterministic fixture effect | Before | After |",
     "|---|---|---|---|---|",
     ...rows,
   ].join("\n");
@@ -44,6 +44,7 @@ function evidenceJson(view: AftershockView): string {
     repository: view.repository,
     source: { id: view.incident.id, revision: view.incident.revision, url: view.incident.sourceUrl },
     capsule: view.capsule,
+    provenance: view.provenance,
     capabilities: view.capabilities,
     matrix: view.matrix,
   }, null, 2);
@@ -52,6 +53,9 @@ function evidenceJson(view: AftershockView): string {
 export function projectCheck(view: AftershockView): GitHubCheckProjection {
   const title = `Aftershock — ${view.assessment.state.replaceAll("_", " ")}`;
   const summary = [
+    "**Provenance: deterministic fixture replay.**",
+    "No fresh execution occurred, the repository SHA was not freshly tested, and the separate saved experimental receipt is not bound to this assessment.",
+    "",
     view.assessment.summary,
     "",
     `Repository: \`${view.repository.fullName}@${view.repository.headSha}\``,
@@ -92,6 +96,8 @@ export function projectIssue(view: AftershockView): GitHubIssueProjection {
     `<!-- aftershock-dedupe:${dedupeKey} -->`,
     `# ${view.incident.title}`,
     "",
+    "> **Deterministic fixture replay:** no fresh execution occurred, this repository SHA was not freshly tested, and the separate saved experimental receipt is not bound to this assessment.",
+    "",
     view.assessment.summary,
     "",
     `- State: **${view.assessment.state}**`,
@@ -105,7 +111,7 @@ export function projectIssue(view: AftershockView): GitHubIssueProjection {
     "",
     "## Context for the coding agent",
     "",
-    "The affected-version match is not a universal safety conclusion. Use the pinned source and exact observations above. Any change must be retested against the same admitted capsule; do not reuse this receipt for another SHA or capsule revision.",
+    "The affected-version match is not a universal safety conclusion. These are deterministic presentation-fixture observations, not fresh measurements. Run a separately admitted capsule before making a repository-specific conclusion, and never reuse evidence across another SHA or capsule revision.",
     "",
     "```json",
     evidenceJson(view),

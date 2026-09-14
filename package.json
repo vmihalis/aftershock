@@ -8,6 +8,7 @@
     "node": ">=24"
   },
   "scripts": {
+    "evaluate": "node scripts/evaluate.mjs",
     "build": "tsc -p tsconfig.json",
     "demo": "tsx src/demo.ts",
     "dev": "tsx watch src/server.ts",
@@ -16,7 +17,8 @@
     "start": "node dist/server.js",
     "test": "node --import tsx --test --test-isolation=none tests/**/*.test.ts",
     "verify:apm": "node experiments/apm-wasmer/run-feasibility.mjs",
-    "verify:receipt": "node experiments/apm-wasmer/verify-receipt.mjs"
+    "verify:receipt": "node experiments/apm-wasmer/verify-receipt.mjs",
+    "verify:bundled": "node experiments/apm-wasmer/verify-receipt.mjs --bundled-only"
   },
   "license": "MIT",
   "dependencies": {

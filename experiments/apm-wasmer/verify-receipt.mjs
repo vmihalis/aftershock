@@ -5,11 +5,19 @@ import { fileURLToPath } from "node:url";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const aftershockRoot = resolve(here, "../..");
+const args = process.argv.slice(2);
+const bundledOnly = args.includes("--bundled-only");
+const receiptArgument = args.indexOf("--receipt");
+const receiptPath = receiptArgument === -1
+  ? resolve(aftershockRoot, "artifacts/feasibility/apm-wasmer-receipt.json")
+  : resolve(args[receiptArgument + 1] ?? "");
+const allowedArgs = args.filter((_, index) => index !== receiptArgument && index !== receiptArgument + 1);
+if ((receiptArgument !== -1 && !args[receiptArgument + 1]) ||
+    (receiptArgument === -1 ? args : allowedArgs).some((arg) => arg !== "--bundled-only")) {
+  throw new Error("Usage: verify-receipt.mjs [--bundled-only] [--receipt path]");
+}
 const receipt = JSON.parse(
-  await readFile(
-    resolve(aftershockRoot, "artifacts/feasibility/apm-wasmer-receipt.json"),
-    "utf8",
-  ),
+  await readFile(receiptPath, "utf8"),
 );
 const expectedCanary = Buffer.from("AFTERSHOCK_SYNTHETIC_CANARY_V1\n", "utf8");
 
@@ -23,6 +31,14 @@ function assert(condition, message) {
 
 assert(receipt.advisory.id === "GHSA-xhrw-5qxx-jpwr", "wrong advisory");
 assert(receipt.cases.length === 4, "expected exactly four cases");
+assert(receipt.schemaVersion === 1, "unsupported receipt schema");
+const expectedRoles = {
+  "vulnerable-target": "target_before",
+  "fixed-control": "fixed_control",
+  "vulnerable-positive-control": "positive_control",
+  "remediated-target": "target_after",
+};
+assert(new Set(receipt.cases.map((entry) => entry.id)).size === 4, "duplicate case ID");
 assert(
   receipt.syntheticCanary.containsCredentialOrPersonalData === false,
   "canary data classification changed",
@@ -32,7 +48,10 @@ assert(receipt.syntheticCanary.sha256 === sha256(expectedCanary), "wrong canary 
 
 const capsule = await readFile(resolve(aftershockRoot, receipt.capsule.path));
 assert(sha256(capsule) === receipt.capsule.sha256, "capsule digest mismatch");
-if (receipt.runtime.packageArtifact !== null) {
+const runtimeArtifact = receipt.runtime.packageArtifact;
+assert(runtimeArtifact && /^[a-f0-9]{64}$/.test(runtimeArtifact.sha256), "invalid runtime digest metadata");
+assert(Number.isSafeInteger(runtimeArtifact.byteLength) && runtimeArtifact.byteLength > 0, "invalid runtime size metadata");
+if (!bundledOnly) {
   const runtimePackage = await readFile(
     resolve(aftershockRoot, receipt.runtime.packageArtifact.path),
   );
@@ -47,6 +66,8 @@ if (receipt.runtime.packageArtifact !== null) {
 }
 
 for (const testCase of receipt.cases) {
+  assert(Object.hasOwn(expectedRoles, testCase.id) && testCase.role === expectedRoles[testCase.id], "unexpected case ID or role");
+  assert(testCase.package.name === "apm-cli", "wrong package identity");
   const wheel = await readFile(resolve(here, "vendor", testCase.package.wheel));
   assert(wheel.byteLength === testCase.package.wheelByteLength, "wheel size mismatch");
   assert(sha256(wheel) === testCase.package.wheelSha256, "wheel digest mismatch");
@@ -62,6 +83,24 @@ for (const testCase of receipt.cases) {
     "wheel-only install failed",
   );
   assert(testCase.narrowExecution.result.ok === true, "narrow execution failed");
+  for (const result of [testCase.runtimeVersion, testCase.narrowExecution.result]) {
+    assert(result.exitCode === 0 && result.reason === "exited", "incomplete process result");
+    assert(result.stdoutTruncated === false && result.stderrTruncated === false, "truncated recorded output");
+    assert(sha256(Buffer.from(result.stdout, "utf8")) === result.stdoutSha256, "recorded stdout digest mismatch");
+    assert(sha256(Buffer.from(result.stderr, "utf8")) === result.stderrSha256, "recorded stderr digest mismatch");
+  }
+  const source = testCase.hostObservation.source;
+  const effect = testCase.hostObservation.effect;
+  assert(source.present === true && source.byteLength === expectedCanary.byteLength, "invalid source capture");
+  assert(effect.path === "/workspace/project/untrusted-plugin/.apm/prompts/synthetic-canary.prompt.md", "wrong recorded effect path");
+  if (effect.present) {
+    assert(effect.sha256 === sha256(expectedCanary) && effect.byteLength === expectedCanary.byteLength, "recorded effect bytes mismatch");
+    assert(effect.exactSyntheticCanaryMatch === true && effect.readError === null, "inconsistent present effect");
+  } else {
+    assert(effect.sha256 === null && effect.byteLength === null && effect.exactSyntheticCanaryMatch === false, "inconsistent absent effect");
+    const missingFileError = `filesystem operation \`open\` failed for \`${effect.path}\`: entry not found`;
+    assert(effect.readError === missingFileError, "absence requires a recorded missing-file result, not a capture failure");
+  }
   assert(
     testCase.hostObservation.source.exactSyntheticCanaryMatch === true,
     "source canary mismatch",
@@ -136,8 +175,19 @@ assert(
 
 process.stdout.write(
   `${JSON.stringify({
-    status: "receipt-verification-ok",
-    capsuleSha256: receipt.capsule.sha256,
+    status: bundledOnly ? "bundled-receipt-consistent" : "receipt-verification-ok",
+    scope: "recorded-claims-and-artifact-integrity",
+    executionPerformed: false,
+    independentlyAuthenticated: false,
+    harnessSha256: receipt.capsule.sha256,
+    threatCapsuleBinding: "not-established; receipt.capsule identifies the experiment harness",
+    runtimeArtifact: {
+      status: bundledOnly ? "NOT_CHECKED" : "HASH_VERIFIED",
+      reason: bundledOnly ? "runtime cache is not included in the repository" : "local bytes match recorded metadata",
+      declaredSha256: runtimeArtifact.sha256,
+    },
+    runtimeRequested: receipt.runtime.packageRequested,
+    recordedRuntimeVersion: targetBefore.runtimeVersion.stdout.trim(),
     repository: receipt.repository,
     targetBefore: targetBefore.hostObservation.assessment,
     fixedEffect: fixed.hostObservation.assessment,

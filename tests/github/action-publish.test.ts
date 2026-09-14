@@ -11,7 +11,7 @@ const repositoryEnvironment = {
   GITHUB_TOKEN: "actions-test-token",
 };
 
-test("selects each of the six DemoController frames with its real fixture revision", () => {
+test("selects each of the six DemoController frames with its deterministic fixture reference revision", () => {
   const expectedShas = [
     "805de8f439f2e01c0f6c52d744a8fc3af640a931",
     "805de8f439f2e01c0f6c52d744a8fc3af640a931",
@@ -52,9 +52,13 @@ test("publishes selected frame Check and deduplicated Issue using GITHUB_TOKEN",
   ));
   const checkBody = JSON.parse(String(requests[0].init.body));
   assert.equal(checkBody.head_sha, result.headSha);
+  assert.match(checkBody.output.summary, /deterministic fixture replay/i);
+  assert.match(checkBody.output.text, /"freshExecution": false/);
   const issueBody = JSON.parse(String(requests[2].init.body));
   assert.match(issueBody.body, /aftershock-dedupe:/);
   assert.match(issueBody.body, new RegExp(result.headSha));
+  assert.match(issueBody.body, /deterministic fixture replay/i);
+  assert.match(issueBody.body, /"savedExperimentalReceiptBound": false/);
 });
 
 test("accepts AFTERSHOCK_FRAME when no CLI frame is supplied", async () => {

@@ -1,0 +1,131 @@
+{
+  "schema_version": 1,
+  "kind": "aftershock.evaluation-context",
+  "entrypoint": "EVALUATION.md",
+  "commands": {
+    "install": "npm ci",
+    "evaluate": "npm run evaluate",
+    "evaluate_json": "npm run --silent evaluate -- --json",
+    "bundled_only": "npm run verify:bundled"
+  },
+  "requirements": {
+    "node": ">=24",
+    "evaluation_network": false,
+    "evaluation_credentials": false,
+    "fresh_runtime_execution": false,
+    "external_publication": false
+  },
+  "submission_snapshot": {
+    "revision": "8725dbd07fbb2ea6d2f9a5bf8e921fd70f1a24a1",
+    "tag": "demo-video",
+    "later_commits": "Evaluation improvements; not part of the video snapshot."
+  },
+  "artifact_identities": [
+    {
+      "role": "recorded_experiment",
+      "path": "artifacts/feasibility/apm-wasmer-receipt.json",
+      "sha256": "0e63b07df572766dee15554d1ff08c38ef0b619e7d0fc2fd399e276905fbd493",
+      "digest_kind": "raw_file_bytes"
+    },
+    {
+      "role": "experiment_harness",
+      "path": "experiments/apm-wasmer/run-feasibility.mjs",
+      "sha256": "8cc62e87d325ef3cb0718b12949edd7d887273f3f4b5c185af9c748f8bc00045",
+      "digest_kind": "raw_file_bytes"
+    },
+    {
+      "role": "canonical_threat_capsule",
+      "path": "capsules/GHSA-xhrw-5qxx-jpwr/r1.json",
+      "sha256": "73dcced620f53a34071ed46a6de98d908157943fe5b338ffa31ca678e3519191",
+      "digest_kind": "raw_file_bytes"
+    }
+  ],
+  "recorded_experiment": {
+    "engine_revision": "f72d1c329a0958aaeff1bb3906db5a4e302724e7",
+    "receipt_legacy_capsule_field_means": "harness source hash",
+    "canonical_r1_binding": "NOT_ESTABLISHED",
+    "canary_bytes": 31,
+    "canary_sha256": "31ee0784a78b5d030c8b6279d24196694b9b045734a2f14325ae97377505f549",
+    "runtime_requested": "python/python@=3.13.18",
+    "runtime_version_stdout": "Python 3.13.15",
+    "runtime_bytes_bundled": false,
+    "full_cli_compatibility_demonstrated": false,
+    "independently_authenticated": false
+  },
+  "canonical_model": {
+    "path": "capsules/GHSA-xhrw-5qxx-jpwr/r1.json",
+    "canonical_digest": "sha256:8a086c74be909fa08e5653356a68dddfb7066a26ff58b18ef80b44e39bf8025a",
+    "canary_bytes": 125,
+    "canary_sha256": "6976c63e82496144356b60c25de1f22d85cae76aaebe7c146273b51af34290b6",
+    "observation_origin": "authored fixtures"
+  },
+  "claims": [
+    {
+      "id": "inventory_match",
+      "implementation": "src/core/applicability.ts",
+      "tests": "tests/core/applicability.test.ts",
+      "boundary": "Caller-supplied inventory and limited stable version syntax."
+    },
+    {
+      "id": "control_adjudication",
+      "implementation": "src/core/observation.ts",
+      "tests": "tests/core/adjudication.test.ts",
+      "boundary": "Authored observations in tests; no fresh runtime execution."
+    },
+    {
+      "id": "revision_invalidation",
+      "implementation": "src/core/assessment.ts",
+      "tests": "tests/core/lifecycle.test.ts",
+      "boundary": "In-memory append-only model; no persistence or automatic scheduler."
+    },
+    {
+      "id": "capsule_identity",
+      "implementation": "src/core/capsule.ts",
+      "tests": "tests/core/capsule.test.ts",
+      "boundary": "Canonical JSON identity does not bind the separate experiment receipt."
+    },
+    {
+      "id": "replay_provenance",
+      "implementation": "src/api/demo-controller.ts",
+      "tests": "tests/api/demo-controller.test.ts",
+      "boundary": "Presentation replay does not derive states from the saved receipt."
+    },
+    {
+      "id": "github_projections",
+      "implementation": "src/github/projections.ts",
+      "tests": "tests/github/projections.test.ts",
+      "boundary": "Payload generation is distinct from execution and publication."
+    },
+    {
+      "id": "scoped_webhook",
+      "implementation": "src/github/webhook.ts",
+      "tests": "tests/github/webhook.test.ts",
+      "boundary": "Single configured fixture scope; publication errors keep stale state."
+    },
+    {
+      "id": "record_consistency",
+      "implementation": "experiments/apm-wasmer/verify-receipt.mjs",
+      "tests": "tests/evaluation/receipt.test.ts",
+      "boundary": "Static integrity only; runtime bytes unbundled; no independent authentication."
+    }
+  ],
+  "not_implemented": [
+    "advisory ingestion",
+    "general inventory collection",
+    "persistent assessment ledger",
+    "scheduled reassessment",
+    "live source/capsule watchers",
+    "automatic experiment-to-core receipt ingestion",
+    "general multi-repository deployment",
+    "Tenki integration"
+  ],
+  "originality": {
+    "new_repository": true,
+    "hacker_bob_code_or_services_used": false,
+    "established_methods": [
+      "differential testing",
+      "positive controls"
+    ],
+    "proposed_contribution": "Advisory context connected to agent work and expiring evidence."
+  }
+}

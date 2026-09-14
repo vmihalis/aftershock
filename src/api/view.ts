@@ -1,5 +1,3 @@
-import { createHash } from "node:crypto";
-
 export const assessmentStates = [
   "POTENTIALLY_AFFECTED",
   "OBSERVED_BY_CHECK",
@@ -12,6 +10,14 @@ export type AssessmentState = (typeof assessmentStates)[number];
 
 export type MatrixStatus = "pending" | "effect_observed" | "effect_absent" | "inconclusive";
 
+export type EvidenceProvenance = {
+  kind: "deterministic_fixture_replay";
+  observationSource: "deterministic_presentation_fixture";
+  freshExecution: false;
+  repositoryShaFreshlyTested: false;
+  savedExperimentalReceiptBound: false;
+};
+
 export type AftershockView = {
   meta: {
     mode: "demo-fixture" | "live";
@@ -19,6 +25,7 @@ export type AftershockView = {
     frame: number;
     frameCount: number;
   };
+  provenance: EvidenceProvenance;
   incident: {
     id: string;
     title: string;
@@ -49,7 +56,7 @@ export type AftershockView = {
     effect: string;
     beforeHash: string;
     afterHash: string;
-    durationMs: number;
+    durationMs: number | null;
   }>;
   events: Array<{
     id: string;
@@ -60,7 +67,3 @@ export type AftershockView = {
   }>;
   artifacts: Array<{ kind: string; label: string; url: string }>;
 };
-
-export function shortHash(value: string): string {
-  return createHash("sha256").update(value).digest("hex").slice(0, 12);
-}

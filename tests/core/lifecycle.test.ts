@@ -4,6 +4,7 @@ import {
   appendAssessment,
   buildDeterministicDemoSequence,
   createStaleAssessment,
+  sha256Text,
   supersededBy,
 } from "../../src/core/index.js";
 
@@ -60,4 +61,33 @@ test("staleness requires an actual immutable-axis change", () => {
       }),
     /still current/u,
   );
+});
+
+test("source and capsule changes independently withdraw evidence without a repository change", () => {
+  const sequence = buildDeterministicDemoSequence();
+  const previous = sequence.assessments[2]!;
+  const unchanged = {
+    previous,
+    repository: previous.repository,
+    source: previous.source,
+    capsule: previous.capsule,
+    applicability: previous.evidence.applicability,
+    createdAt: sequence.assessments[3]!.createdAt,
+  };
+  const cases = [
+    { axis: "SOURCE_REVISION", input: { ...unchanged, source: { ...previous.source, revision: "reviewed-source-r2" } } },
+    { axis: "CAPSULE_REVISION", input: { ...unchanged, capsule: { ...previous.capsule, revision: "r2" } } },
+    { axis: "CAPSULE_DIGEST", input: { ...unchanged, capsule: { ...previous.capsule, digest: sha256Text("changed contract") } } },
+  ];
+  for (const { axis, input } of cases) {
+    const stale = createStaleAssessment(input);
+    assert.equal(stale.state, "EVIDENCE_STALE_FOR_CURRENT_HEAD");
+    assert.equal(stale.repository.headSha, previous.repository.headSha);
+    assert.deepEqual(stale.evidence.staleAxes, [axis]);
+    assert.equal(stale.observations.length, 0);
+    assert.equal(stale.supersedes, previous.id);
+    assert.notEqual(stale.id, previous.id);
+  }
+  assert.equal(previous.state, "REMEDIATION_RETESTED");
+  assert.equal(previous.observations.length, 3, "historical evidence is retained in its original record");
 });
