@@ -25,10 +25,10 @@ import {
   type RawHostObservation,
 } from "./types.js";
 
-const REPOSITORY = "aftershock-demo/apm-agent-fixture";
-const VULNERABLE_SHA = "1d445c29136bf8008cd6df6cb0cf0133f3275d8f";
-const PATCHED_SHA = "f6fc7e66afd3bf6ec6f7ee454264f4cec20e3cec";
-const CURRENT_SHA = "587c569b7d313bbba9d75b31bf84a280c18262af";
+const REPOSITORY = "vmihalis/aftershock-apm-fixture";
+const VULNERABLE_SHA = "805de8f439f2e01c0f6c52d744a8fc3af640a931";
+const PATCHED_SHA = "e4d7a28fa5dc5cf027fe421576f3ddb5c0dad46c";
+const CURRENT_SHA = "9834362a2ede058fb4d7a8d468f0c6ebaa78cc2b";
 
 function snapshot(headSha: string, version: string, observedAt: string): ProjectSnapshot {
   return parseProjectSnapshot({

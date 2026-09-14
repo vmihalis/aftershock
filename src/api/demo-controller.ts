@@ -37,7 +37,7 @@ const frames: Frame[] = [
   {
     state: "POTENTIALLY_AFFECTED",
     summary: "apm-cli 0.8.11 matches the affected range; no runtime effect has been claimed.",
-    headSha: "1d445c29136bf8008cd6df6cb0cf0133f3275d8f",
+    headSha: "805de8f439f2e01c0f6c52d744a8fc3af640a931",
     eventTitle: "Project matched",
     eventDetail: "requirements.txt pins apm-cli==0.8.11.",
     eventType: "project.matched",
@@ -46,7 +46,7 @@ const frames: Frame[] = [
   {
     state: "POTENTIALLY_AFFECTED",
     summary: "A restricted verification job started; the assessment remains a version match until controls finish.",
-    headSha: "1d445c29136bf8008cd6df6cb0cf0133f3275d8f",
+    headSha: "805de8f439f2e01c0f6c52d744a8fc3af640a931",
     eventTitle: "Wasmer job started",
     eventDetail: "Network disabled; no credentials or live host mount granted.",
     eventType: "verification.started",
@@ -55,7 +55,7 @@ const frames: Frame[] = [
   {
     state: "OBSERVED_BY_CHECK",
     summary: "The target copied exact synthetic canary bytes across the plugin boundary; fixed and positive controls behaved as required.",
-    headSha: "1d445c29136bf8008cd6df6cb0cf0133f3275d8f",
+    headSha: "805de8f439f2e01c0f6c52d744a8fc3af640a931",
     eventTitle: "Effect observed",
     eventDetail: "Trusted host observation changed from the safe canary hash to the copied canary hash.",
     eventType: "verification.observed",
@@ -64,7 +64,7 @@ const frames: Frame[] = [
   {
     state: "OBSERVED_BY_CHECK",
     summary: "An evidence-backed GitHub task is ready for the connected coding agent.",
-    headSha: "1d445c29136bf8008cd6df6cb0cf0133f3275d8f",
+    headSha: "805de8f439f2e01c0f6c52d744a8fc3af640a931",
     eventTitle: "Check and Issue created",
     eventDetail: "The issue is deduplicated by repository, commit and capsule revision.",
     eventType: "github.task_created",
@@ -73,7 +73,7 @@ const frames: Frame[] = [
   {
     state: "REMEDIATION_RETESTED",
     summary: "The 0.8.12 remediation stopped the exact effect while the vulnerable positive control remained live.",
-    headSha: "f6fc7e66afd3bf6ec6f7ee454264f4cec20e3cec",
+    headSha: "e4d7a28fa5dc5cf027fe421576f3ddb5c0dad46c",
     eventTitle: "Remediation retested",
     eventDetail: "Project head passed the scoped check; the prior vulnerable receipt remains attached to its original SHA.",
     eventType: "verification.remediated",
@@ -82,7 +82,7 @@ const frames: Frame[] = [
   {
     state: "EVIDENCE_STALE_FOR_CURRENT_HEAD",
     summary: "The current head differs from the retested commit; the older green receipt is not evidence for this revision.",
-    headSha: "587c569b7d313bbba9d75b31bf84a280c18262af",
+    headSha: "9834362a2ede058fb4d7a8d468f0c6ebaa78cc2b",
     eventTitle: "Evidence invalidated for current head",
     eventDetail: "Automatic reassessment queued for the new repository SHA.",
     eventType: "assessment.superseded",
@@ -156,7 +156,7 @@ export class DemoController extends EventEmitter {
         revision: "2026-05-15",
       },
       repository: {
-        fullName: "aftershock-demo/apm-agent-fixture",
+        fullName: "vmihalis/aftershock-apm-fixture",
         branch: "main",
         headSha: this.#index === frames.length - 1 && this.#headOverride ? this.#headOverride : current.headSha,
       },
@@ -184,6 +184,7 @@ export class DemoController extends EventEmitter {
       events,
       artifacts: [
         { kind: "source", label: "Official Microsoft advisory", url: "https://github.com/microsoft/apm/security/advisories/GHSA-xhrw-5qxx-jpwr" },
+        { kind: "fixture", label: "Authorized public fixture", url: "https://github.com/vmihalis/aftershock-apm-fixture" },
         { kind: "receipt", label: "Recorded Wasmer receipt", url: "/api/feasibility/receipt" },
       ],
     };

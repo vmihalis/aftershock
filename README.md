@@ -11,7 +11,7 @@ new advisory -> exact project match -> restricted check -> Check + agent Issue
 
 ## Three-minute hero path
 
-The hackathon demo uses Microsoft's public `GHSA-xhrw-5qxx-jpwr` / `CVE-2026-44641` advisory and a synthetic 31-byte canary.
+The hackathon demo uses Microsoft's public `GHSA-xhrw-5qxx-jpwr` / `CVE-2026-44641` advisory, the authorized public [`vmihalis/aftershock-apm-fixture`](https://github.com/vmihalis/aftershock-apm-fixture) repository, and a synthetic 31-byte canary.
 
 1. A fixture repository pins affected `apm-cli==0.8.11`.
 2. Aftershock reports `POTENTIALLY_AFFECTED`; a version match is not called exploitation.

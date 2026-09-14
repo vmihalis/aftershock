@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "repository": {
-    "fullName": "aftershock-demo/apm-agent-fixture",
+    "fullName": "vmihalis/aftershock-apm-fixture",
     "branch": "main",
-    "headSha": "f6fc7e66afd3bf6ec6f7ee454264f4cec20e3cec"
+    "headSha": "e4d7a28fa5dc5cf027fe421576f3ddb5c0dad46c"
   },
   "observedAt": "2026-09-13T18:01:00.000Z",
   "inventory": {
