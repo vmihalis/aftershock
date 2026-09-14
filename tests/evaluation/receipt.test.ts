@@ -87,3 +87,16 @@ test("a permission failure cannot be accepted as evidence of absence", () => {
   assert.notEqual(result.status, 0);
   assert.match(result.stderr, /absence requires a recorded missing-file result/);
 });
+
+test("a package version label cannot be paired with the other admitted wheel", () => {
+  const mismatched = structuredClone(original);
+  const otherPackage = mismatched.cases[1].package;
+  Object.assign(mismatched.cases[0].package, {
+    wheel: otherPackage.wheel,
+    wheelSha256: otherPackage.wheelSha256,
+    wheelByteLength: otherPackage.wheelByteLength,
+  });
+  const result = checkReceipt(mismatched);
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /package version does not match its admitted wheel identity/);
+});

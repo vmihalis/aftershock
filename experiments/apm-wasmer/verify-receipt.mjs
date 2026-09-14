@@ -38,6 +38,16 @@ const expectedRoles = {
   "vulnerable-positive-control": "positive_control",
   "remediated-target": "target_after",
 };
+const admittedWheels = {
+  "0.8.11": {
+    file: "apm_cli-0.8.11-py3-none-any.whl",
+    sha256: "268a3832035d15568d9a395f40ac36fc1e66e98f116e2ba961662420a142b723",
+  },
+  "0.8.12": {
+    file: "apm_cli-0.8.12-py3-none-any.whl",
+    sha256: "d252a1364b52cf14dde7ca3a25dbd3af949e0d573d3f163fa3ac76757aec5961",
+  },
+};
 assert(new Set(receipt.cases.map((entry) => entry.id)).size === 4, "duplicate case ID");
 assert(
   receipt.syntheticCanary.containsCredentialOrPersonalData === false,
@@ -68,6 +78,9 @@ if (!bundledOnly) {
 for (const testCase of receipt.cases) {
   assert(Object.hasOwn(expectedRoles, testCase.id) && testCase.role === expectedRoles[testCase.id], "unexpected case ID or role");
   assert(testCase.package.name === "apm-cli", "wrong package identity");
+  const admittedWheel = admittedWheels[testCase.package.version];
+  assert(admittedWheel && testCase.package.wheel === admittedWheel.file &&
+    testCase.package.wheelSha256 === admittedWheel.sha256, "package version does not match its admitted wheel identity");
   const wheel = await readFile(resolve(here, "vendor", testCase.package.wheel));
   assert(wheel.byteLength === testCase.package.wheelByteLength, "wheel size mismatch");
   assert(sha256(wheel) === testCase.package.wheelSha256, "wheel digest mismatch");
