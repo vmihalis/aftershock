@@ -136,7 +136,13 @@ export function createGitHubAppJwt(
   return `${signingInput}.${signature}`;
 }
 
-function installationClient(token: string, fetchImpl: FetchLike): GitHubRequestClient {
+export function githubTokenClient(
+  token: string,
+  fetchImpl: FetchLike = fetch,
+): GitHubRequestClient {
+  if (token.trim().length === 0) {
+    throw new TypeError("A non-empty GitHub token is required");
+  }
   return {
     async request(route, parameters) {
       const match = /^(GET|POST|PATCH) (\/.+)$/.exec(route);
@@ -169,7 +175,12 @@ function installationClient(token: string, fetchImpl: FetchLike): GitHubRequestC
       }
       const response = await fetchImpl(url, init);
       const text = await response.text();
-      if (!response.ok) throw new Error(`GitHub API ${method} ${path} failed with ${response.status}: ${text.slice(0, 500)}`);
+      if (!response.ok) {
+        // GitHub error bodies are not included because they are outside our trust
+        // boundary and can reflect request data. In particular, never put the
+        // bearer token or response text into an Actions log.
+        throw new Error(`GitHub API ${method} ${path} failed with status ${response.status}`);
+      }
       return { data: text ? JSON.parse(text) as unknown : null };
     },
   };
@@ -191,10 +202,10 @@ export async function installationClientFromEnvironment(
     },
   });
   const text = await response.text();
-  if (!response.ok) throw new Error(`GitHub installation authentication failed with ${response.status}: ${text.slice(0, 500)}`);
+  if (!response.ok) throw new Error(`GitHub installation authentication failed with status ${response.status}`);
   const token = objectData(text ? JSON.parse(text) as unknown : null).token;
   if (typeof token !== "string" || token.length === 0) throw new Error("GitHub installation response omitted its token");
-  return installationClient(token, fetchImpl);
+  return githubTokenClient(token, fetchImpl);
 }
 
 export async function publishWithInstallation(

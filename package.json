@@ -12,6 +12,7 @@
     "demo": "tsx src/demo.ts",
     "dev": "tsx watch src/server.ts",
     "lint": "tsc -p tsconfig.json --noEmit",
+    "publish:action": "tsx src/github/action-publish.ts",
     "start": "node dist/server.js",
     "test": "node --import tsx --test --test-isolation=none tests/**/*.test.ts",
     "verify:apm": "node experiments/apm-wasmer/run-feasibility.mjs",
