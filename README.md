@@ -61,6 +61,18 @@ npm run dev
 
 The replay API is explicitly marked `meta.mode: "demo-fixture"`. Recorded Wasmer evidence is stored under `artifacts/feasibility/`; do not present fixture frames as fresh execution.
 
+## Publish the real GitHub demo artifacts
+
+The authorized fixture includes a manually dispatched [Aftershock demo publisher](https://github.com/vmihalis/aftershock-apm-fixture/actions/workflows/aftershock-demo.yml). It checks out this engine, uses the fixture repository's scoped `GITHUB_TOKEN`, and calls:
+
+```bash
+npm run publish:action -- --frame 3  # failing observed-effect Check + open Issue
+npm run publish:action -- --frame 5  # successful remediation Check + closed Issue
+npm run publish:action -- --frame 6  # neutral stale-evidence Check + reopened Issue
+```
+
+The demo adapter fails closed unless it is running in `vmihalis/aftershock-apm-fixture`. General installations use the GitHub App webhook path described below.
+
 ## Evidence rules
 
 Aftershock keeps these claims separate:

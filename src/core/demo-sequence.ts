@@ -28,7 +28,7 @@ import {
 const REPOSITORY = "vmihalis/aftershock-apm-fixture";
 const VULNERABLE_SHA = "805de8f439f2e01c0f6c52d744a8fc3af640a931";
 const PATCHED_SHA = "e4d7a28fa5dc5cf027fe421576f3ddb5c0dad46c";
-const CURRENT_SHA = "9834362a2ede058fb4d7a8d468f0c6ebaa78cc2b";
+const CURRENT_SHA = "5c29dc5fca31d077d6f23d73e648f3bc8a61924a";
 
 function snapshot(headSha: string, version: string, observedAt: string): ProjectSnapshot {
   return parseProjectSnapshot({

@@ -82,7 +82,7 @@ const frames: Frame[] = [
   {
     state: "EVIDENCE_STALE_FOR_CURRENT_HEAD",
     summary: "The current head differs from the retested commit; the older green receipt is not evidence for this revision.",
-    headSha: "9834362a2ede058fb4d7a8d468f0c6ebaa78cc2b",
+    headSha: "5c29dc5fca31d077d6f23d73e648f3bc8a61924a",
     eventTitle: "Evidence invalidated for current head",
     eventDetail: "Automatic reassessment queued for the new repository SHA.",
     eventType: "assessment.superseded",

@@ -18,7 +18,7 @@ test("selects each of the six DemoController frames with its real fixture revisi
     "805de8f439f2e01c0f6c52d744a8fc3af640a931",
     "805de8f439f2e01c0f6c52d744a8fc3af640a931",
     "e4d7a28fa5dc5cf027fe421576f3ddb5c0dad46c",
-    "9834362a2ede058fb4d7a8d468f0c6ebaa78cc2b",
+    "5c29dc5fca31d077d6f23d73e648f3bc8a61924a",
   ];
   expectedShas.forEach((sha, index) => {
     const view = selectDemoFrame(index + 1);
